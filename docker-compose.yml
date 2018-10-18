@@ -1,0 +1,30 @@
+version: '2'
+
+services:
+  nginx:
+    image: nginx:latest
+    ports:
+      - 80:80
+      - "443:443"
+    volumes:
+      - ./www:/usr/share/nginx/html
+      - ./hosts:/etc/nginx/conf.d
+    depends_on:
+      - php
+
+  php:
+    image: php:7.2-fpm
+    volumes:
+      - ./www:/usr/share/nginx/html
+    depends_on:
+      - mysql
+
+  mysql:
+    image: mysql:8
+    ports:
+        - "3306:3306"
+    volumes:
+        - ./mysql:/var/lib/mysql
+    # задаем пароль для root пользователя
+    environment:
+        MYSQL_ROOT_PASSWORD: 123456
