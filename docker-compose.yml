@@ -1,4 +1,4 @@
-version: '2'
+version: '3'
 
 services:
   nginx:
@@ -7,16 +7,16 @@ services:
       - 80:80
       - "443:443"
     volumes:
-      - ./www:/usr/share/nginx/html
+      - ./www:/var/www
       - ./hosts:/etc/nginx/conf.d
-    depends_on:
+    links:
       - php
 
   php:
-    image: php:7.2-fpm
+    build: ./images/php
     volumes:
-      - ./www:/usr/share/nginx/html
-    depends_on:
+      - ./www:/var/www
+    links:
       - mysql
 
   mysql:
@@ -27,4 +27,7 @@ services:
         - ./mysql:/var/lib/mysql
     # задаем пароль для root пользователя
     environment:
-        MYSQL_ROOT_PASSWORD: 123456
+        - MYSQL_ROOT_PASSWORD=123456
+        - MYSQL_DATABASE=docker
+        - MYSQL_USER=user
+        - MYSQL_PASSWORD=secret
