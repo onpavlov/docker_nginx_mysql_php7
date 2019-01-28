@@ -4,30 +4,43 @@ services:
   nginx:
     image: nginx:latest
     ports:
-      - 80:80
-      - "443:443"
+      - "${INTERFACE}:80:80"
+      - "${INTERFACE}:443:443"
     volumes:
-      - ./www:/var/www
+      - ./www:${SITE_PATH}
       - ./hosts:/etc/nginx/conf.d
     links:
       - php
+    networks:
+      - docker_network
 
   php:
     build: ./images/php
     volumes:
-      - ./www:/var/www
+      - ./www:${SITE_PATH}
     links:
       - mysql
+    networks:
+      - docker_network
 
   mysql:
-    image: mysql:8
+    image: mysql:${MYSQL_VERSION}
     ports:
-        - "3306:3306"
+        - "${INTERFACE}:3306:3306"
     volumes:
         - ./mysql:/var/lib/mysql
     # задаем пароль для root пользователя
     environment:
-        - MYSQL_ROOT_PASSWORD=123456
-        - MYSQL_DATABASE=docker
-        - MYSQL_USER=user
-        - MYSQL_PASSWORD=secret
+        - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+        - MYSQL_DATABASE=${MYSQL_DATABASE}
+        - MYSQL_USER=${MYSQL_USER}
+        - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+    networks:
+        - docker_network
+networks:
+    docker_network:
+        driver: bridge
+        ipam:
+            driver: default
+            config:
+                - subnet: 10.100.0.0/24

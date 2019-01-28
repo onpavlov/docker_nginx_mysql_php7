@@ -1,7 +1,7 @@
 # Для начала указываем исходный образ, он будет использован как основа
 FROM php:7.1-fpm
 # Необязательная строка с указанием автора образа
-MAINTAINER PHPtoday.ru <info@phptoday.ru>
+MAINTAINER nameless <4pavlovon@gmail.com>
 
 # RUN выполняет идущую за ней команду в контексте нашего образа.
 # В данном случае мы установим некоторые зависимости и модули PHP.
@@ -20,6 +20,11 @@ RUN apt-get update && apt-get install -y \
 
 # Куда же без composer'а.
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+# Добавляем настройки в конфиг файл php-fpm
+RUN echo "php_admin_flag[log_errors] = On" >> /usr/local/etc/php-fpm.conf
+RUN echo "catch_workers_output = yes" >> /usr/local/etc/php-fpm.conf
+RUN echo "access.log = /proc/self/fd/2" >> /usr/local/etc/php-fpm.conf
 
 # Добавим свой php.ini, можем в нем определять свои значения конфига
 ADD php.ini /usr/local/etc/php/conf.d/40-custom.ini
