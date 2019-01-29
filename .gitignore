@@ -1,5 +1,6 @@
 logs/*
 mysql/*
+.DS_Store
 
 !logs/readme.txt
 !mysql/readme.txt
